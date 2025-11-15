@@ -1,4 +1,13 @@
 package entities.soils;
 
-public class GrasslandSoil {
+import entities.Soil;
+
+public class GrasslandSoil extends Soil{
+    public double rootDensity;
+
+    public GrasslandSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
+                      double organicMatter, double rootDensity) {
+        super(name, mass, nitrogen, waterRetention, soilpH, organicMatter);
+        this.rootDensity = rootDensity;
+    }
 }

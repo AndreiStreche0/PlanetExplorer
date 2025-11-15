@@ -1,4 +1,13 @@
 package entities.soils;
 
-public class SwampSoil {
+import entities.Soil;
+
+public class SwampSoil extends Soil{
+    public double waterLogging;
+
+    public SwampSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
+                         double organicMatter, double waterLogging) {
+        super(name, mass, nitrogen, waterRetention, soilpH, organicMatter);
+        this.waterLogging = waterLogging;
+    }
 }
