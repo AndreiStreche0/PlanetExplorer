@@ -3,7 +3,7 @@ package entities.soils;
 import entities.Soil;
 
 public class ForestSoil extends Soil {
-    public double leafLitter;
+    private double leafLitter;
 
     public ForestSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                       double organicMatter, double leafLitter) {

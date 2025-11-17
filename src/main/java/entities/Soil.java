@@ -1,10 +1,10 @@
 package entities;
 
 public class Soil extends Entity{
-    public double nitrogen;
-    public double waterRetention;
-    public double soilpH;
-    public double organicMatter;
+    private double nitrogen;
+    private double waterRetention;
+    private double soilpH;
+    private double organicMatter;
 
     public Soil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                 double organicMatter) {

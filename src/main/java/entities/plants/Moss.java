@@ -1,4 +1,26 @@
 package entities.plants;
 
-public class Moss {
+import entities.Plant;
+import entities.enums.PlantAge;
+
+public class Moss extends Plant {
+
+    public Moss(String name, double mass, PlantAge plantAge) {
+        super(name, mass, plantAge);
+    }
+
+    @Override
+    public double getStuckingPercentage() {
+        return 0;
+    }
+
+    @Override
+    public double getOxygen() {
+        return 0;
+    }
+
+    @Override
+    public void evolve() {
+
+    }
 }

@@ -3,7 +3,7 @@ package entities.soils;
 import entities.Soil;
 
 public class TundraSoil extends Soil{
-    public double permafrostDepth;
+    private double permafrostDepth;
 
     public TundraSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                      double organicMatter, double permafrostDepth) {

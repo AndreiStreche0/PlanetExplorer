@@ -1,7 +1,7 @@
 package planet;
 
-import fileio.TerritorySectionParamsInput;
-import fileio.WaterInput;
+import entities.*;
+import fileio.*;
 import planet.Cell;
 
 public class Matrix {
@@ -23,7 +23,34 @@ public class Matrix {
 
     public void setCells(TerritorySectionParamsInput inputParams) {
         for (WaterInput water : inputParams.water) {
-            cells[water.sections.]
+            Water newWater = CreateEntity.createWater(water);
+            for (PairInput coords : water.sections) {
+                cells[coords.x][coords.y].setCellWater(newWater);
+            }
+        }
+        for (AnimalInput animals : inputParams.animals) {
+            Animal newAnimal = CreateEntity.createAnimal(animals);
+            for (PairInput coords : animals.sections) {
+                cells[coords.x][coords.y].setCellAnimal(newAnimal);
+            }
+        }
+        for (SoilInput soils : inputParams.soil) {
+            Soil newSoil = CreateEntity.createSoil(soils);
+            for (PairInput coords : soils.sections) {
+                cells[coords.x][coords.y].setCellSoil(newSoil);
+            }
+        }
+        for (AirInput airs : inputParams.air) {
+            Air newAir = CreateEntity.createAir(airs);
+            for (PairInput coords : airs.sections) {
+                cells[coords.x][coords.y].setCellAir(newAir);
+            }
+        }
+        for (PlantInput plants : inputParams.plants) {
+            Plant newPlant = CreateEntity.createPlant(plants);
+            for (PairInput coords : plants.sections) {
+                cells[coords.x][coords.y].setCellPlant(newPlant);
+            }
         }
     }
 
