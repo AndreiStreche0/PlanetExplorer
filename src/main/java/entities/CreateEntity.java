@@ -10,7 +10,7 @@ import fileio.*;
 
 public final class CreateEntity {
     public static Water createWater(WaterInput input) {
-        return new Water(input.name, input.mass, input.purity,
+        return new Water(input.name, input.mass, input.type, input.purity,
                 input.salinity, input.turbidity, input.contaminantIndex,
                 input.pH, input.isFrozen);
     }
@@ -62,8 +62,8 @@ public final class CreateEntity {
         switch(input.type) {
             case "Carnivores":
                 return new Carnivore(input.name, input.mass, AnimalHunger.WELL_FED);
-            case "Detrivores":
-                return new Detrivore(input.name, input.mass, AnimalHunger.WELL_FED);
+            case "Detritivores":
+                return new Detritivore(input.name, input.mass, AnimalHunger.WELL_FED);
             case "Herbivores":
                 return new Herbivore(input.name, input.mass, AnimalHunger.WELL_FED);
             case "Omnivores":

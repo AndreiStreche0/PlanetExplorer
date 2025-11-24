@@ -1,5 +1,7 @@
 package entities;
 
+import planet.Cell;
+
 public interface Evolve {
-    public void evolve();
+    public abstract void evolve(Cell currentCell, int timeStamp);
 }
