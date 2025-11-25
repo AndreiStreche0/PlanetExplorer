@@ -88,22 +88,20 @@ public class Cell {
         }
     }
 
-    public double getScore() {
-        System.out.println("the cell cordonates are:" + this.getxCoordinate() + ", " + this.getyCoordinate());
+    public int getScore() {
         double sum = cellSoil.blockingProbability();
-        System.out.println("Soil probability is " + cellSoil.blockingProbability());
         sum += cellAir.damageProbability();
-        System.out.println("Air probability is " + cellAir.damageProbability());
+        int numberEntity = 2;
 
         if (cellAnimal != null) {
             sum += cellAnimal.attackProbability();
-            System.out.println("Animal probability is " + cellAnimal.attackProbability());
+            numberEntity++;
         }
         if (cellPlant != null) {
             sum += cellPlant.stuckProbability();
-            System.out.println("Plant probability is " + cellPlant.stuckProbability());
+            numberEntity++;
         }
-        return (double) Math.abs(sum / 4.0);
+        return (int) Math.round(Math.abs(sum / numberEntity));
     }
 
     public ObjectNode getCellOutput() {

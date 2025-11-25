@@ -32,7 +32,16 @@ public class Brain {
             outputString = "ERROR: Simulation not started. Cannot perform action";
         } else {
             while (simulationRunning && currentSimulation.getTimeStamp() < commandTimeStamp) {
+                if (currentSimulation.getTerraBot().isCharging()) {
+                    currentSimulation.getTerraBot().charge();
+                }
                 currentSimulation.evolve();
+            }
+            if (currentSimulation.getTimeStamp() >= commandTimeStamp
+                    && currentSimulation.getTerraBot().isCharging()) {
+                outputString = "ERROR: Robot still charging. Cannot perform action";
+                addMessageOutput(outputString, commandTimeStamp, commandName);
+                return;
             }
             switch (commandName) {
                 case "startSimulation":
@@ -48,10 +57,14 @@ public class Brain {
                     outputString = "Simulation has ended.";
                     break;
                 case "moveRobot":
+                    System.out.println("at timestamp " + commandTimeStamp + " battery is: " + currentSimulation.getEnergyStatus());
                     outputString = currentSimulation.moveRobot();
                     break;
-                case "chargeRobot":
-                    outputString = currentSimulation.chargeRobot();
+                case "rechargeBattery":
+                    outputString = currentSimulation.chargeRobot(commandInput.timeToCharge);
+                    break;
+                case "changeWeatherConditions":
+                    outputString = currentSimulation.changeWeather(commandInput, commandInput.type);
                     break;
                 case "scanObject":
                     outputString = currentSimulation.scanObject();

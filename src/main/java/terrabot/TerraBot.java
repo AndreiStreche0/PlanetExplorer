@@ -7,17 +7,26 @@ public class TerraBot {
     private int xCoord;
     private int yCoord;
     private boolean charging;
-    private int chargeTimeStamp;
+    private int chargeTime;
 
     public TerraBot(int energy, int xCoord, int yCoord) {
         this.energy = energy;
         this.xCoord = xCoord;
         this.yCoord = yCoord;
         charging = false;
-        this.chargeTimeStamp = 0;
+        this.chargeTime = 0;
     }
     public boolean isCharging() {
         return this.charging;
+    }
+
+    public void charge() {
+        this.chargeTime--;
+        this.energy++;
+
+        if (this.chargeTime <= 0) {
+            this.charging = false;
+        }
     }
 
     public int getEnergy() {
@@ -32,8 +41,8 @@ public class TerraBot {
         return yCoord;
     }
 
-    public int getChargeTimeStamp() {
-        return chargeTimeStamp;
+    public int getChargeTime() {
+        return chargeTime;
     }
 
     public void setEnergy(int energy) {
@@ -52,8 +61,8 @@ public class TerraBot {
         this.charging = charging;
     }
 
-    public void setChargeTimeStamp(int chargeTimeStamp) {
-        this.chargeTimeStamp = chargeTimeStamp;
+    public void setChargeTime(int chargeTime) {
+        this.chargeTime = chargeTime;
     }
 
 }

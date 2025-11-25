@@ -10,6 +10,7 @@ public abstract class Air extends Entity implements Evolve{
     private double oxygenLevel;
     private AirType airType;
     private double airQuality;
+    private int timeUntilWeatherChange;
     public Air(String name, double mass, double humidity, double temperature, double oxygenLevel, AirType airType) {
         super(name, mass);
         this.humidity = humidity;
@@ -17,6 +18,11 @@ public abstract class Air extends Entity implements Evolve{
         this.oxygenLevel = oxygenLevel;
         this.airType = airType;
         this.airQuality = 0;
+        this.timeUntilWeatherChange = Integer.MAX_VALUE;
+    }
+
+    public void setTimeUntilWeatherChange(int timeUntilWeatherChange) {
+        this.timeUntilWeatherChange = timeUntilWeatherChange;
     }
 
     public String getDisplayType() {
@@ -61,6 +67,10 @@ public abstract class Air extends Entity implements Evolve{
         this.airQuality = airQuality;
     }
 
+    public int getTimeUntilWeatherChange() {
+        return timeUntilWeatherChange;
+    }
+
     public void evolve(Cell currentCell, int timeStamp) {
         if (currentCell.getCellPlant() != null && currentCell.getCellPlant().isScanned()) {
             this.oxygenLevel += currentCell.getCellPlant().calculateOxygenProduction();
@@ -70,5 +80,6 @@ public abstract class Air extends Entity implements Evolve{
             this.humidity += 1;
         }
         this.calculateAirQuality();
+        timeUntilWeatherChange--;
     }
 }

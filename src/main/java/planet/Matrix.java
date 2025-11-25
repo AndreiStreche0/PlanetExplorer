@@ -3,6 +3,7 @@ package planet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import entities.*;
+import entities.airs.*;
 import fileio.*;
 import planet.Cell;
 import terrabot.TerraBot;
@@ -93,24 +94,72 @@ public class Matrix {
 
     public Cell findBestCell (int xCoordBot, int yCoordBot, int currEnergy) {
         Cell bestCell = null;
-        double bestScore = Double.MAX_VALUE;
-        int[][] directions = {{0, -1}, {1, 0}, {0, 1}, {-1, 0}};
+        int bestScore = Integer.MAX_VALUE;
+        int[][] directions = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
         //up, right, down, left
 
         for (int i = 0; i < 4; i++) {
-            int currX = xCoordBot + directions[i][0];
-            int currY = yCoordBot + directions[i][1];
+            int currY = yCoordBot + directions[i][0];
+            int currX = xCoordBot + directions[i][1];
             if (currX >= 0 && currX < width && currY >= 0 && currY < height
                     && cells[currY][currX].getScore() < bestScore) {
                 bestScore = cells[currY][currX].getScore();
                 bestCell = cells[currY][currX];
             }
         }
-        System.out.println("best score is:" + bestScore);
         int score = (int) Math.round(bestScore);
         if (currEnergy < score) {
             return null;
         }
         return bestCell;
+    }
+
+    public boolean startWeatherChange (CommandInput commandInput, String weatherEventName) {
+        boolean success = false;
+
+        for (int i = 0; i < this.height; i++) {
+            for (int j = 0; j < this.width; j++) {
+                Air air = cells[i][j].getCellAir();
+
+                switch (weatherEventName) {
+                    case "peopleHiking":
+                        if (air.getDisplayType().equals("MountainAir")) {
+                            success = true;
+                            ((MountainAir)air).startPeopleHiking(commandInput.numberOfHikers);
+                        }
+                        break;
+                    case "desertStorm":
+                        if (air.getDisplayType().equals("DesertAir")) {
+                            success = true;
+                            ((DesertAir)air).startDesertStorm(commandInput.desertStorm);
+                        }
+                        break;
+                    case "newSeason":
+                        if (air.getDisplayType().equals("TemperateAir")) {
+                            success = true;
+                            ((TemperateAir)air).startNewSeason(commandInput.season);
+                        }
+                        break;
+                    case "polarStorm":
+                        if (air.getDisplayType().equals("PolarAir")) {
+                            success = true;
+                            ((PolarAir)air).startPolarStorm(commandInput.windSpeed);
+                        }
+                        break;
+                    case "rainfall":
+                        if (air.getDisplayType().equals("TropicalAir")) {
+                            success = true;
+                            ((TropicalAir)air).startRainfall(commandInput.rainfall);
+                        }
+                        break;
+                    default:
+                        return false;
+                }
+
+            }
+        }
+
+
+        return success;
     }
 }

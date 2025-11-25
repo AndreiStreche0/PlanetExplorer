@@ -9,6 +9,6 @@ public class Detritivore extends Animal {
         super(name, mass, hunger, AnimalType.DETRITIVORES);
     }
     public double attackProbability() {
-        return (100 - 90) / 10.0;
+        return (100 - 90) / 10.0    ;
     }
 }

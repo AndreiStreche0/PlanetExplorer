@@ -14,8 +14,10 @@ public class GrasslandSoil extends Soil{
     public void calculateSoilQuality() {
         double quality = super.getNitrogen() * 1.3;
         quality += this.rootDensity * 0.8;
-        quality = (double) Math.round(quality * 100) / 100;
-        super.setSoilQuality(quality);
+        quality += super.getOrganicMatter() * 1.5;
+        double normalizedQuality = Math.max(0, Math.min(100, quality));
+        normalizedQuality = (double) Math.round(normalizedQuality * 100) / 100;
+        super.setSoilQuality(normalizedQuality);
     }
 
     public double blockingProbability() {

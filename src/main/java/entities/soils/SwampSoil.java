@@ -15,8 +15,9 @@ public class SwampSoil extends Soil{
         double quality = super.getNitrogen() * 1.1;
         quality += super.getOrganicMatter() * 2.2;
         quality -= this.waterLogging * 5;
-        quality = (double) Math.round(quality * 100) / 100;
-        super.setSoilQuality(quality);
+        double normalizedQuality = Math.max(0, Math.min(100, quality));
+        normalizedQuality = (double) Math.round(normalizedQuality * 100) / 100;
+        super.setSoilQuality(normalizedQuality);
     }
 
     public double blockingProbability() {

@@ -15,8 +15,9 @@ public class TundraSoil extends Soil{
         double quality = super.getNitrogen() * 0.7;
         quality += super.getOrganicMatter() * 0.5;
         quality -= this.permafrostDepth * 1.5;
-        quality = (double) Math.round(quality * 100) / 100;
-        super.setSoilQuality(quality);
+        double normalizedQuality = Math.max(0, Math.min(100, quality));
+        normalizedQuality = (double) Math.round(normalizedQuality * 100) / 100;
+        super.setSoilQuality(normalizedQuality);
     }
 
     public double blockingProbability() {

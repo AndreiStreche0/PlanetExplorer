@@ -3,6 +3,8 @@ package simulation;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import entities.*;
+import entities.enums.AirType;
+import fileio.CommandInput;
 import fileio.SimulationInput;
 import planet.Cell;
 import planet.Matrix;
@@ -32,6 +34,10 @@ public class Simulation {
         return timeStamp;
     }
 
+    public TerraBot getTerraBot() {
+        return terraBot;
+    }
+
     public void evolve() {
         this.timeStamp++;
         mapMatrix.evolve(this.timeStamp);
@@ -54,8 +60,10 @@ public class Simulation {
         this.running = false;
     }
 
-    public String chargeRobot() {
-        return "";
+    public String chargeRobot(int chargeTime) {
+        this.terraBot.setChargeTime(chargeTime);
+        this.terraBot.setCharging(true);
+        return "Robot battery is charging.";
     }
     public String scanObject() {
         return "";
@@ -67,7 +75,7 @@ public class Simulation {
         return "";
     }
     public String getEnergyStatus() {
-        return "";
+        return "TerraBot has " + terraBot.getEnergy() + " energy points left.";
     }
 
     public ObjectNode printEnvConditions() {
@@ -115,12 +123,6 @@ public class Simulation {
             waterNode.put("type", currentWater.getType());
             waterNode.put("name", currentWater.getName());
             waterNode.put("mass", currentWater.getMass());
-            waterNode.put("purity", currentWater.getPurity());
-            waterNode.put("salinity", currentWater.getSalinity());
-            waterNode.put("turbidity", currentWater.getTurbidity());
-            waterNode.put("contaminantIndex", currentWater.getContaminantIndex());
-            waterNode.put("pH", currentWater.getpH());
-            waterNode.put("isFrozen", currentWater.isFrozen());
             cellNode.set("water", waterNode);
         }
 
@@ -133,7 +135,15 @@ public class Simulation {
         airNode.put("temperature", currentAir.getTemperature());
         airNode.put("oxygenLevel", currentAir.getOxygenLevel());
         airNode.put("airQuality", currentAir.getAirQuality());
-        airNode.put(currentAir.getSpecificNameCharacteristic(), currentAir.getSpecificCharacteristic());
+        if (currentAir.getDisplayType().equals("DesertAir")) {
+            if (currentAir.getSpecificCharacteristic() == 1.0) {
+                airNode.put(currentAir.getSpecificNameCharacteristic(), true);
+            } else {
+                airNode.put(currentAir.getSpecificNameCharacteristic(), false);
+            }
+        } else {
+            airNode.put(currentAir.getSpecificNameCharacteristic(), currentAir.getSpecificCharacteristic());
+        }
         cellNode.set("air", airNode);
 
         return cellNode;
@@ -143,10 +153,16 @@ public class Simulation {
         return mapMatrix.getMapOutput();
     }
 
-    public String moveRobot() {
-        if (terraBot.isCharging() && timeStamp < terraBot.getChargeTimeStamp()) {
-            return "ERROR: Robot still charging. Cannot perform action";
+    public String changeWeather(CommandInput commandInput, String weatherChangeName) {
+        boolean success = this.mapMatrix.startWeatherChange(commandInput, weatherChangeName);
+
+        if (success) {
+            return "The weather has changed.";
         }
+        return "ERROR: The weather change does not affect the environment. Cannot perform action";
+    }
+
+    public String moveRobot() {
         Cell bestCell = mapMatrix.findBestCell(terraBot.getxCoord(), terraBot.getyCoord()
                 , terraBot.getEnergy());
 
