@@ -9,7 +9,7 @@ public enum PlantType {
 
     private final String displayType;
 
-    PlantType(String displayType) {
+    PlantType(final String displayType) {
         this.displayType = displayType;
     }
 

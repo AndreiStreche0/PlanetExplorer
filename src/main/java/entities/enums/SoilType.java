@@ -9,7 +9,7 @@ public enum SoilType {
 
     private final String displayType;
 
-    SoilType(String displayType) {
+    SoilType(final String displayType) {
         this.displayType = displayType;
     }
 

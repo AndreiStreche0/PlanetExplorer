@@ -3,7 +3,7 @@ package entities.airs;
 import entities.Air;
 import entities.enums.AirType;
 
-public class DesertAir extends Air {
+public final class DesertAir extends Air {
     private final double dustParticles;
     private boolean desertStorm;
 
@@ -13,13 +13,14 @@ public class DesertAir extends Air {
         desertStorm = false;
         this.dustParticles = dustParticles;
     }
+
     public void calculateAirQuality() {
         double quality = super.getOxygenLevel() * 2;
         quality -= super.getTemperature() * 0.3;
         quality -= this.dustParticles / 5;
         quality = Math.max(0, Math.min(quality, 100.0));
         if (this.isDustStorm() && super.getTimeUntilWeatherChange() > 0) {
-            quality -= (this.desertStorm ? 30 : 0);
+            quality -= super.getWeatherChangeAmount();
         }
         quality = Math.max(0, Math.min(quality, 100.0));
         quality = (double) Math.round(quality * 100) / 100;
@@ -63,8 +64,11 @@ public class DesertAir extends Air {
         return desertStorm;
     }
 
-    public void startDesertStorm(boolean desertStorm){
-        this.desertStorm = desertStorm;
-        super.setTimeUntilWeatherChange(2)  ;
+    public void startWeatherChange(String weatherChangeName, double weatherChangeAmount) {
+        if (weatherChangeName.equals("desertStorm")) {
+            this.desertStorm = true;
+            super.setTimeUntilWeatherChange(2);
+            super.setWeatherChangeAmount(weatherChangeAmount);
+        }
     }
 }

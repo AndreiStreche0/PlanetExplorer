@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import fileio.CommandInput;
 import fileio.InputLoader;
-import fileio.SimulationInput;
 import simulation.Brain;
 
 import java.io.File;

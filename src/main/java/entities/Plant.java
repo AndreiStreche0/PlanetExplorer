@@ -3,75 +3,85 @@ package entities;
 import entities.enums.PlantAge;
 import entities.enums.PlantType;
 import planet.Cell;
-
-public abstract class Plant extends Entity implements Evolve{
+/**
+ * class that handles plants, their characteristics, types and evolving logic
+ */
+public abstract class Plant extends Entity implements Evolve {
+    private static final double SOIL_GROWTH_BONUS = 0.2;
+    private static final double WATER_SCAN_GROWTH_BONUS = 0.2;
+    private static final double AGE_THRESHOLD = 1.0;
+    private static final double RESET_GROWTH_RATE = 0;
     private PlantAge plantAge;
-    private PlantType plantType;
+    private final PlantType plantType;
     private boolean scanned;
-    private int scanTimeStamp;
     private double growthRate;
 
-    public Plant(String name, double mass, PlantAge plantAge, PlantType plantType) {
+    public Plant(final String name, final double mass, final PlantAge plantAge,
+                 final PlantType plantType) {
         super(name, mass);
         this.plantAge = plantAge;
         this.plantType = plantType;
         this.scanned = false;
-        this.scanTimeStamp = -1;
         this.growthRate = 0;
     }
 
-    public double getGrowthRate() {
-        return growthRate;
-    }
-
-    public void setGrowthRate(double growthRate) {
-        this.growthRate = growthRate;
-    }
-
-    public void setPlantAge(PlantAge plantAge) {
+    /**
+     * @param plantAge sets it
+     */
+    public void setPlantAge(final PlantAge plantAge) {
         this.plantAge = plantAge;
     }
 
-    public int getScanTimeStamp() {
-        return scanTimeStamp;
-    }
-
+    /**
+     * @param scanned - sets it
+     */
     @Override
-    public void setScanned(boolean scanned) {
+    public void setScanned(final boolean scanned) {
         this.scanned = scanned;
     }
 
-    public void setScanTimeStamp(int scanTimeStamp) {
-        this.scanTimeStamp = scanTimeStamp;
-    }
-
-    public abstract double getStuckingPercentage();
-    public abstract double getOxygen();
-
+    /**
+     * @return displayType
+     */
     public String getDisplayType() {
         return plantType.getDisplayType();
     }
 
+    /**
+     * @return PlantAge
+     */
     public PlantAge getPlantAge() {
         return plantAge;
     }
 
+    /**
+     * abstract method to calculate the amount of oxygen the plant will produce based on its type
+     * @return oxygen amount
+     */
     public abstract double calculateOxygenProduction();
-    public void evolve(Cell currentCell, int timestamp) {
+
+    /**
+     * evolving logic and how the plant will grow based on the other entities
+     * @param currentCell the cell the plant is on
+     * @param timeStamp timestamp of current simulation
+     */
+    public void evolve(final Cell currentCell, final int timeStamp) {
         if (currentCell.getCellSoil() != null) {
-            this.grow(currentCell, 0.2);
+            this.grow(currentCell, SOIL_GROWTH_BONUS);
         }
         if (currentCell.getCellWater() != null && currentCell.getCellWater().isScanned()) {
-            this.grow(currentCell, 0.2);
+            this.grow(currentCell, WATER_SCAN_GROWTH_BONUS);
         }
     }
 
-    public void grow(Cell currCell, double growth) {
-        System.out.println("Plant " + getName() + " at (" + currCell.getxCoordinate() + "," +
-                currCell.getyCoordinate() + ") growth: " + growthRate + " + " + growth +
-                " = " + (growthRate + growth) + ", age: " + plantAge);
-        if (growthRate == 0.8) {
-            growthRate = 0;
+    /**
+     * grows plant and changes age
+     * @param currCell the cell the plant is on
+     * @param growth how much the plant will grow
+     */
+    public void grow(final Cell currCell, final double growth) {
+        if (growthRate + growth >= AGE_THRESHOLD) {
+            growthRate = RESET_GROWTH_RATE;
             switch (plantAge) {
                 case YOUNG:
                     this.setPlantAge(PlantAge.MATURE);
@@ -81,15 +91,24 @@ public abstract class Plant extends Entity implements Evolve{
                     break;
                 case OLD:
                     currCell.setCellPlant(null);
-                    return;
+                    break; // Adăugat 'break' pentru a îndeplini Checkstyle
+                default: // Adăugat clauza 'default' pentru a îndeplini Checkstyle
+                    break;
             }
         } else {
-            growthRate += 0.2;
+            growthRate += growth;
         }
     }
 
+    /**
+     * abstract method to check for the probability of the robot getting stuck in this plant
+     * @return the probability
+     */
     public abstract double stuckProbability();
 
+    /**
+     * @return if the plant is scanned
+     */
     public boolean isScanned() {
         return this.scanned;
     }

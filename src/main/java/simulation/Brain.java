@@ -2,24 +2,27 @@ package simulation;
 
 import fileio.CommandInput;
 import fileio.SimulationInput;
-import planet.Matrix;
-import terrabot.TerraBot;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 
+/**
+ * handles the logic behind this project
+ * coordinates the robot, the simulations and the map
+ */
 public class Brain {
-    private List<SimulationInput> simulationsParameters;
+    private final List<SimulationInput> simulationsParameters;
     private Simulation currentSimulation;
     private int simulationNumber;
-    private List<CommandInput> commands;
+    private final List<CommandInput> commands;
     private final ObjectMapper objectMapper;
     private final ArrayNode outputNode;
 
-    public Brain(List<SimulationInput> simulationsParameters, List<CommandInput> commands, ObjectMapper objectMapper, ArrayNode outputNode) {
-        this.simulationsParameters= simulationsParameters;
+    public Brain(final List<SimulationInput> simulationsParameters,
+                 final List<CommandInput> commands, final ObjectMapper objectMapper,
+                 final ArrayNode outputNode) {
+        this.simulationsParameters = simulationsParameters;
         this.currentSimulation = null;
         this.simulationNumber = -1;
         this.commands = commands;
@@ -27,13 +30,17 @@ public class Brain {
         this.outputNode = outputNode;
     }
 
-    public void processCommand(CommandInput commandInput) {
-        String commandName = commandInput.command;
-        int commandTimeStamp = commandInput.timestamp;
-        String outputString = "";
+    /**
+     * handles the command and the output
+     * @param commandInput command input
+     */
+    public void processCommand(final CommandInput commandInput) {
+        String commandName = commandInput.getCommand();
+        int commandTimeStamp = commandInput.getTimestamp();
+        String message;
         boolean simulationRunning = currentSimulation != null && currentSimulation.isRunning();
         if (!simulationRunning && !commandName.equals("startSimulation")) {
-            outputString = "ERROR: Simulation not started. Cannot perform action";
+            message = "ERROR: Simulation not started. Cannot perform action";
         } else {
             while (simulationRunning && currentSimulation.getTimeStamp() < commandTimeStamp) {
                 if (currentSimulation.getTerraBot().isCharging()) {
@@ -43,82 +50,106 @@ public class Brain {
             }
             if (simulationRunning && currentSimulation.getTimeStamp() >= commandTimeStamp
                     && currentSimulation.getTerraBot().isCharging()) {
-                outputString = "ERROR: Robot still charging. Cannot perform action";
-                addMessageOutput(outputString, commandTimeStamp, commandName);
+                message = "ERROR: Robot still charging. Cannot perform action";
+                addMessageOutput(message, commandTimeStamp, commandName);
                 return;
             }
             switch (commandName) {
                 case "startSimulation":
                     if (simulationRunning) {
-                        outputString = "ERROR: Simulation already started. Cannot perform action";
+                        message = "ERROR: Simulation already started. Cannot perform action";
                     } else {
                         this.simulationNumber++;
-                        currentSimulation = new Simulation(simulationsParameters.get(simulationNumber));
+                        currentSimulation =
+                                new Simulation(simulationsParameters.get(simulationNumber));
                         currentSimulation.start();
-                        outputString = "Simulation has started.";
+                        message = "Simulation has started.";
                     }
                     break;
                 case "endSimulation":
                     currentSimulation.stop();
-                    outputString = "Simulation has ended.";
+                    message = "Simulation has ended.";
                     break;
                 case "moveRobot":
-                    outputString = currentSimulation.moveRobot();
+                    message = currentSimulation.moveRobot();
                     break;
                 case "rechargeBattery":
-                    outputString = currentSimulation.chargeRobot(commandInput.timeToCharge);
+                    message = currentSimulation.chargeRobot(commandInput.getTimeToCharge());
                     break;
                 case "changeWeatherConditions":
-                    outputString = currentSimulation.changeWeather(commandInput, commandInput.type);
+                    message =
+                            currentSimulation.changeWeather(commandInput, commandInput.getType());
                     break;
                 case "scanObject":
-                    outputString = currentSimulation.scanObject(commandInput.color
-                            , commandInput.smell, commandInput.sound);
+                    message = currentSimulation.scanObject(commandInput.getColor(),
+                            commandInput.getSmell(), commandInput.getSound());
                     break;
                 case "learnFact":
-                    outputString = currentSimulation.learnFact(commandInput.components, commandInput.subject);
+                    message = currentSimulation.learnFact(commandInput.getComponents(),
+                            commandInput.getSubject());
                     break;
                 case "improveEnvironment":
-                    outputString = currentSimulation.improveEnvironment(commandInput.improvementType, commandInput.name);
+                    String type = commandInput.getImprovementType();
+                    message = currentSimulation.improveEnvironment(type, commandInput.getName());
                     break;
                 case "getEnergyStatus":
-                    outputString = currentSimulation.getEnergyStatus();
+                    message = currentSimulation.getEnergyStatus();
                     break;
                 case "printEnvConditions":
                     ObjectNode envOutput = currentSimulation.printEnvConditions();
                     addObjectOutput(envOutput, commandTimeStamp, commandName);
                     return;
                 case "printMap":
-                    addArrayObjectOutput(currentSimulation.printMap(), commandTimeStamp, commandName);
+                    addArrayObjectOutput(currentSimulation.printMap(), commandTimeStamp,
+                            commandName);
                     return;
                 case "printKnowledgeBase":
                     ArrayNode knowledgeOutput = currentSimulation.printKnowledgeBase();
                     addArrayObjectOutput(knowledgeOutput, commandTimeStamp, commandName);
                     return;
                 default:
-                    outputString = "ERROR: Wrong command";
+                    message = "ERROR: Wrong command";
             }
         }
-        addMessageOutput(outputString, commandTimeStamp, commandName);
+        addMessageOutput(message, commandTimeStamp, commandName);
     }
 
-    public void addArrayObjectOutput(ArrayNode outputArray, int timeStamp, String commandName) {
+    /**
+     * adds an array to the output object
+     * @param outputArray array of nodes for output
+     * @param timeStamp timeStamp of command
+     * @param commandName name of command
+     */
+    public void addArrayObjectOutput(final ArrayNode outputArray, final int timeStamp,
+                                     final String commandName) {
         ObjectNode outputObject = objectMapper.createObjectNode();
         outputObject.put("command", commandName);
         outputObject.put("output", outputArray);
         outputObject.put("timestamp", timeStamp);
         outputNode.add(outputObject);
     }
-
-    public void addObjectOutput (ObjectNode newNode, int timeStamp, String commandName) {
+    /**
+     * adds an object to the output object
+     * @param newNode node for output
+     * @param timeStamp timeStamp of command
+     * @param commandName name of command
+     */
+    public void addObjectOutput(final ObjectNode newNode, final int timeStamp,
+                                final String commandName) {
         ObjectNode outputObject = objectMapper.createObjectNode();
         outputObject.put("command", commandName);
         outputObject.put("output", newNode);
         outputObject.put("timestamp", timeStamp);
         outputNode.add(outputObject);
     }
-
-    public void addMessageOutput (String outputMessage, int timeStamp, String commandName) {
+    /**
+     * adds a message to the output object
+     * @param outputMessage message for output
+     * @param timeStamp timeStamp of command
+     * @param commandName name of command
+     */
+    public void addMessageOutput(final String outputMessage, final int timeStamp,
+                                 final String commandName) {
         ObjectNode outputObject = objectMapper.createObjectNode();
         outputObject.put("command", commandName);
         outputObject.put("message", outputMessage);
@@ -126,6 +157,9 @@ public class Brain {
         outputNode.add(outputObject);
     }
 
+    /**
+     * parses all the commands
+     */
     public void parseCommands() {
         for (CommandInput command : commands) {
             processCommand(command);

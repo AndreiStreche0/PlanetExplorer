@@ -8,8 +8,8 @@ public class TerraBot {
     private int yCoord;
     private boolean charging;
     private int chargeTime;
-    private LinkedHashMap<String, List<String>> knowledgeBase;
-    private Set<String> scannedItems;
+    private final LinkedHashMap<String, List<String>> knowledgeBase;
+    private final Set<String> scannedItems;
 
     public TerraBot(int energy, int xCoord, int yCoord) {
         this.energy = energy;
@@ -43,10 +43,6 @@ public class TerraBot {
 
     public int getyCoord() {
         return yCoord;
-    }
-
-    public int getChargeTime() {
-        return chargeTime;
     }
 
     public void setEnergy(int energy) {

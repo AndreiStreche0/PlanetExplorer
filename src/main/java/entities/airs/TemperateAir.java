@@ -3,16 +3,14 @@ package entities.airs;
 import entities.Air;
 import entities.enums.AirType;
 
-public class TemperateAir extends Air {
+public final class TemperateAir extends Air {
     private final double pollenLevel;
-    private String season;
     private boolean newSeason;
 
     public TemperateAir(String name, double mass, double humidity, double temperature,
                         double oxygenLevel, double pollenLevel) {
         super(name, mass, humidity, temperature, oxygenLevel, AirType.TEMPERATE);
         this.pollenLevel = pollenLevel;
-        this.season = "";
         this.newSeason = false;
     }
     public void calculateAirQuality() {
@@ -21,7 +19,7 @@ public class TemperateAir extends Air {
         quality -= this.pollenLevel / 10;
         quality = Math.max(0, Math.min(quality, 100.0));
         if (this.isNewSeason() && super.getTimeUntilWeatherChange() >= 0) {
-            quality -= (this.season.equalsIgnoreCase("Spring") ? 15 : 0);
+            quality -= super.getWeatherChangeAmount();
         }
         quality = Math.max(0, Math.min(quality, 100.0));
         quality = (double) Math.round(quality * 100) / 100;
@@ -62,10 +60,11 @@ public class TemperateAir extends Air {
         return this.newSeason;
     }
 
-    public void startNewSeason(String season) {
-        this.newSeason = true;
-        this.season = season;
-        super.setTimeUntilWeatherChange(2);
+    public void startWeatherChange(String weatherChangeName, double weatherChangeAmount) {
+        if (weatherChangeName.equals("newSeason")) {
+            this.newSeason = true;
+            super.setTimeUntilWeatherChange(2);
+            super.setWeatherChangeAmount(weatherChangeAmount);
+        }
     }
-
 }

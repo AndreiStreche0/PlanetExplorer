@@ -3,25 +3,42 @@ package entities.soils;
 import entities.Soil;
 import entities.enums.SoilType;
 
-public class TundraSoil extends Soil{
+public final class TundraSoil extends Soil {
     private final double permafrostDepth;
 
-    public TundraSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
-                     double organicMatter, double permafrostDepth) {
+    private static final double NITROGEN_MULTIPLIER = 0.7;
+    private static final double ORGANIC_MULTIPLIER = 0.5;
+    private static final double PERMAFROST_MULTIPLIER = 1.5;
+    private static final double MAX_VALUE = 100.0;
+    private static final double ROUNDER = 100.0;
+    private static final double BLOCKING_BASE = 50.0;
+    private static final double BLOCKING_DIVISOR = 50.0;
+    private static final double BLOCKING_MULTIPLIER = 100.0;
+
+    public TundraSoil(final String name, final double mass, final double nitrogen,
+                      final double waterRetention, final double soilpH,
+                      final double organicMatter, final double permafrostDepth) {
         super(name, mass, nitrogen, waterRetention, soilpH, organicMatter, SoilType.TUNDRA);
         this.permafrostDepth = permafrostDepth;
     }
+    /**
+     * calculates soil quality for this specific soil type
+     */
     public void calculateSoilQuality() {
-        double quality = super.getNitrogen() * 0.7;
-        quality += super.getOrganicMatter() * 0.5;
-        quality -= this.permafrostDepth * 1.5;
-        double normalizedQuality = Math.max(0, Math.min(100, quality));
-        normalizedQuality = (double) Math.round(normalizedQuality * 100) / 100;
+        double quality = super.getNitrogen() * NITROGEN_MULTIPLIER;
+        quality += super.getOrganicMatter() * ORGANIC_MULTIPLIER;
+        quality -= this.permafrostDepth * PERMAFROST_MULTIPLIER;
+        double normalizedQuality = Math.max(0, Math.min(MAX_VALUE, quality));
+        normalizedQuality = (double) Math.round(normalizedQuality * ROUNDER)
+                / ROUNDER;
         super.setSoilQuality(normalizedQuality);
     }
-
+    /**
+     * calculates the probability to block terraBot for this specific soil type
+     * @return probability
+     */
     public double blockingProbability() {
-        return  (50 - permafrostDepth) / 50.0 * 100;
+        return (BLOCKING_BASE - permafrostDepth) / BLOCKING_DIVISOR * BLOCKING_MULTIPLIER;
     }
 
     public double getSpecificCharacteristic() {

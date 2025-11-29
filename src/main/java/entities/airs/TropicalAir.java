@@ -3,9 +3,8 @@ package entities.airs;
 import entities.Air;
 import entities.enums.AirType;
 
-public class TropicalAir extends Air {
+public final class TropicalAir extends Air {
     private final double co2Level;
-    private double rainfall;
     private boolean rainfallEvent;
 
     public TropicalAir(String name, double mass, double humidity, double temperature,
@@ -19,7 +18,7 @@ public class TropicalAir extends Air {
         quality -= this.co2Level / 100;
         quality = Math.max(0, Math.min(quality, 100.0));
         if (this.isRainfall() && super.getTimeUntilWeatherChange() > 0) {
-            quality += this.rainfall * 0.3;
+            quality += super.getWeatherChangeAmount();
         }
         quality = Math.max(0, Math.min(quality, 100.0));
         quality = (double) Math.round(quality * 100) / 100;
@@ -60,10 +59,11 @@ public class TropicalAir extends Air {
         return this.rainfallEvent;
     }
 
-    public void startRainfall(double rainfall) {
-        this.rainfallEvent = true;
-        this.rainfall = rainfall;
-        super.setTimeUntilWeatherChange(2);
+    public void startWeatherChange(String weatherChangeName, double weatherChangeAmount) {
+        if (weatherChangeName.equals("rainfall")) {
+            this.rainfallEvent = true;
+            super.setTimeUntilWeatherChange(2);
+            super.setWeatherChangeAmount(weatherChangeAmount);
+        }
     }
-
 }

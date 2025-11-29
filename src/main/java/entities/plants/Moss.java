@@ -4,33 +4,38 @@ import entities.Plant;
 import entities.enums.PlantAge;
 import entities.enums.PlantType;
 
-public class Moss extends Plant {
+public final class Moss extends Plant {
+    private static final double YOUNG_OXYGEN_PRODUCTION = 0.2;
+    private static final double MATURE_OXYGEN_PRODUCTION = 0.7;
+    private static final double OLD_OXYGEN_PRODUCTION = 0.4;
+    private static final double MOSS_BONUS_OXYGEN = 0.8;
+    private static final double MOSS_STUCK_PROBABILITY = 0.4;
 
-    public Moss(String name, double mass, PlantAge plantAge) {
+    public Moss(final String name, final double mass, final PlantAge plantAge) {
         super(name, mass, plantAge, PlantType.MOSSES);
     }
 
-    @Override
-    public double getStuckingPercentage() {
-        return 0;
-    }
-
-    @Override
-    public double getOxygen() {
-        return 0;
-    }
-
+    /**
+     * calculates oxygen production of this plant type
+     * @return oxygen production value
+     */
     public double calculateOxygenProduction() {
         double oxygen = switch (super.getPlantAge()) {
-            case YOUNG -> 0.2;
-            case MATURE -> 0.7;
-            case OLD -> 0.4;
+            case YOUNG -> YOUNG_OXYGEN_PRODUCTION;
+            case MATURE -> MATURE_OXYGEN_PRODUCTION;
+            case OLD -> OLD_OXYGEN_PRODUCTION;
             default -> 0.0;
         };
-        oxygen += 0.8;
+        oxygen += MOSS_BONUS_OXYGEN;
         return oxygen;
     }
+    /**
+     * calculates stuck probability of terraBot for this plant type
+     * @return probability
+     */
+
     public double stuckProbability() {
-        return 0.4;
+        return MOSS_STUCK_PROBABILITY;
     }
 }
+

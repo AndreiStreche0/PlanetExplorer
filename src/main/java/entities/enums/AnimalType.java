@@ -9,7 +9,7 @@ public enum AnimalType {
 
     private final String displayType;
 
-    AnimalType(String displayType) {
+    AnimalType(final String displayType) {
         this.displayType = displayType;
     }
 

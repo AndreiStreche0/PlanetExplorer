@@ -9,16 +9,19 @@ import entities.Animal;
 import entities.Soil;
 import entities.Water;
 
-public class Cell {
-    private int xCoordinate;
-    private int yCoordinate;
+/**
+ * Manages an individual cell and the entities on it
+ */
+public final class Cell {
+    private final int xCoordinate;
+    private final int yCoordinate;
     private Air cellAir;
     private Soil cellSoil;
     private Water cellWater;
     private Animal cellAnimal;
     private Plant cellPlant;
 
-    public Cell(int row, int column) {
+    public Cell(final int row, final int column) {
         this.xCoordinate = column;
         this.yCoordinate = row;
         this.cellAir = null;
@@ -28,32 +31,35 @@ public class Cell {
         this.cellPlant = null;
     }
 
-    public void setCoordinates(int xCoordinate, int yCoordinate) {
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
-    }
-    public void setCellAir(Air cellAir) {
+    public void setCellAir(final Air cellAir) {
         this.cellAir = cellAir;
     }
-    public void setCellSoil(Soil cellSoil) {
+    public void setCellSoil(final Soil cellSoil) {
         this.cellSoil = cellSoil;
     }
-    public void setCellWater(Water cellWater) {
+    public void setCellWater(final Water cellWater) {
         this.cellWater = cellWater;
     }
-    public void setCellAnimal(Animal cellAnimal) {
+    public void setCellAnimal(final Animal cellAnimal) {
         this.cellAnimal = cellAnimal;
     }
-    public void setCellPlant(Plant cellPlant) {
+    public void setCellPlant(final Plant cellPlant) {
         this.cellPlant = cellPlant;
     }
 
+    /**
+     * @return x coordinate
+     */
     public int getxCoordinate() {
         return xCoordinate;
     }
+    /**
+     * @return y coordinate
+     */
     public int getyCoordinate() {
         return yCoordinate;
     }
+
     public Air getCellAir() {
         return cellAir;
     }
@@ -70,7 +76,11 @@ public class Cell {
         return cellPlant;
     }
 
-    public void evolve(int timeStamp) {
+    /**
+     * used for the evolution of each entity
+     * @param timeStamp current simulation timeStamp
+     */
+    public void evolve(final int timeStamp) {
         if (this.cellPlant != null && this.cellPlant.isScanned()) {
             this.cellPlant.evolve(this, timeStamp);
         }
@@ -81,7 +91,7 @@ public class Cell {
             this.cellSoil.evolve(this, timeStamp);
         }
         if (this.cellWater != null && this.cellWater.isScanned()) {
-            this.cellWater.evolve(this, timeStamp);
+            this.cellWater.evolve();
         }
         if (this.cellAnimal != null && this.cellAnimal.isScanned()) {
             this.cellAnimal.evolve(this, timeStamp);
@@ -89,22 +99,36 @@ public class Cell {
 
     }
 
-    public void scanPlant(int timeStamp) {
+    /**
+     * scans plant of current cell
+     */
+    public void scanPlant() {
         this.cellPlant.setScanned(true);
-        this.cellPlant.setScanTimeStamp(timeStamp);
     }
 
-    public void scanWater(int timeStamp) {
+    /**
+     * scans water of current cell
+     * @param timeStamp time of scan
+     */
+    public void scanWater(final int timeStamp) {
         this.cellWater.setScanned(true);
         this.cellWater.setScanTimeStamp(timeStamp);
     }
 
-    public void scanAnimal(int timeStamp) {
+    /**
+     * scans animal of current cell
+     * @param timeStamp time of scan
+     */
+    public void scanAnimal(final int timeStamp) {
         this.cellAnimal.setScanned(true);
         this.cellAnimal.setScanTimeStamp(timeStamp);
     }
 
-    public int getScore() {
+    /**
+     * gets the score for robot movement
+     * @return the score
+     */
+    public double getScore() {
         double sum = cellSoil.blockingProbability();
         sum += cellAir.damageProbability();
         int numberEntity = 2;
@@ -120,6 +144,10 @@ public class Cell {
         return (int) Math.round(Math.abs(sum / numberEntity));
     }
 
+    /**
+     * gets data of each cell for map output
+     * @return a node with the data
+     */
     public ObjectNode getCellOutput() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode node = mapper.createObjectNode();

@@ -9,7 +9,7 @@ public enum AirType {
 
     private final String displayType;
 
-    AirType(String displayType) {
+    AirType(final String displayType) {
         this.displayType = displayType;
     }
 

@@ -3,16 +3,14 @@ package entities.airs;
 import entities.Air;
 import entities.enums.AirType;
 
-public class PolarAir extends Air {
+public final class PolarAir extends Air {
     private final double iceCrystalConcentration;
-    private double windSpeed;
     private boolean polarStorm;
 
     public PolarAir(String name, double mass, double humidity, double temperature,
                     double oxygenLevel, double iceCrystalConcentration) {
         super(name, mass, humidity, temperature, oxygenLevel, AirType.POLAR);
         this.iceCrystalConcentration = iceCrystalConcentration;
-        this.windSpeed = 0;
         this.polarStorm = false;
     }
     public void calculateAirQuality() {
@@ -21,7 +19,7 @@ public class PolarAir extends Air {
         quality -= this.iceCrystalConcentration / 20;
 
         if (this.isPolarStorm() && super.getTimeUntilWeatherChange() > 0) {
-            quality -= this.windSpeed / 5.0;
+            quality -= super.getWeatherChangeAmount();
         }
         quality = Math.max(0, Math.min(quality, 100.0));
         quality = (double) Math.round(quality * 100) / 100;
@@ -62,9 +60,11 @@ public class PolarAir extends Air {
         return this.polarStorm;
     }
 
-    public void startPolarStorm(double windSpeed) {
-        this.polarStorm = true;
-        this.windSpeed = windSpeed;
-        super.setTimeUntilWeatherChange(2);
+    public void startWeatherChange(String weatherChangeName, double weatherChangeAmount) {
+        if (weatherChangeName.equals("polarStorm")) {
+            this.polarStorm = true;
+            super.setTimeUntilWeatherChange(2);
+            super.setWeatherChangeAmount(weatherChangeAmount);
+        }
     }
 }
