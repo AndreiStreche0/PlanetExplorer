@@ -4,7 +4,7 @@ import entities.Soil;
 import entities.enums.SoilType;
 
 public class TundraSoil extends Soil{
-    private double permafrostDepth;
+    private final double permafrostDepth;
 
     public TundraSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                      double organicMatter, double permafrostDepth) {

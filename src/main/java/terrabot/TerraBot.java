@@ -1,6 +1,6 @@
 package terrabot;
 
-import planet.Cell;
+import java.util.*;
 
 public class TerraBot {
     private int energy;
@@ -8,6 +8,8 @@ public class TerraBot {
     private int yCoord;
     private boolean charging;
     private int chargeTime;
+    private LinkedHashMap<String, List<String>> knowledgeBase;
+    private Set<String> scannedItems;
 
     public TerraBot(int energy, int xCoord, int yCoord) {
         this.energy = energy;
@@ -15,6 +17,8 @@ public class TerraBot {
         this.yCoord = yCoord;
         charging = false;
         this.chargeTime = 0;
+        this.knowledgeBase = new LinkedHashMap<>();
+        this.scannedItems = new HashSet<>();
     }
     public boolean isCharging() {
         return this.charging;
@@ -65,4 +69,26 @@ public class TerraBot {
         this.chargeTime = chargeTime;
     }
 
+    public LinkedHashMap<String, List<String>> getKnowledgeBase() {
+        return knowledgeBase;
+    }
+
+    public Set<String> getScannedItems() {
+        return scannedItems;
+    }
+
+    public void scanItem(String item) {
+        scannedItems.add(item);
+    }
+
+    public boolean hasScanned(String item) {
+        return scannedItems.contains(item);
+    }
+
+    public void addFact(String item, String fact) {
+        if (!knowledgeBase.containsKey(item)) {
+            knowledgeBase.put(item, new ArrayList<>());
+        }
+        knowledgeBase.get(item).add(fact);
+    }
 }

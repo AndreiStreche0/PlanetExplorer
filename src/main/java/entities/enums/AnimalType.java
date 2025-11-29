@@ -7,7 +7,7 @@ public enum AnimalType {
     DETRITIVORES("Detritivores"),
     PARASITES("Parasites");
 
-    private String displayType;
+    private final String displayType;
 
     AnimalType(String displayType) {
         this.displayType = displayType;

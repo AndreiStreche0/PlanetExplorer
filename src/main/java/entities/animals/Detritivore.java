@@ -11,4 +11,7 @@ public class Detritivore extends Animal {
     public double attackProbability() {
         return (100 - 90) / 10.0    ;
     }
+    public boolean eatsAnimals() {
+        return false;
+    }
 }

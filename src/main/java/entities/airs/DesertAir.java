@@ -4,7 +4,7 @@ import entities.Air;
 import entities.enums.AirType;
 
 public class DesertAir extends Air {
-    private double dustParticles;
+    private final double dustParticles;
     private boolean desertStorm;
 
     public DesertAir(String name, double mass, double humidity, double temperature,
@@ -17,28 +17,38 @@ public class DesertAir extends Air {
         double quality = super.getOxygenLevel() * 2;
         quality -= super.getTemperature() * 0.3;
         quality -= this.dustParticles / 5;
-        quality = (double) Math.round(quality * 100) / 100;
-
-        if (this.isDustStorm() && super.getTimeUntilWeatherChange() <= 0) {
+        quality = Math.max(0, Math.min(quality, 100.0));
+        if (this.isDustStorm() && super.getTimeUntilWeatherChange() > 0) {
             quality -= (this.desertStorm ? 30 : 0);
         }
+        quality = Math.max(0, Math.min(quality, 100.0));
+        quality = (double) Math.round(quality * 100) / 100;
 
         super.setAirQuality(quality);
     }
 
     public double getSpecificCharacteristic() {
-        if ((super.getTimeUntilWeatherChange() <= 0) && this.isDustStorm()) {
+        if (this.isDustStorm() && super.getTimeUntilWeatherChange() >= 0) {
             return 1.0;
         }
         return 0.0;
     }
 
-    public double damageProbability() {
-        this.calculateAirQuality();
-        double toxicity = Math.max(0, Math.min(100, super.getAirQuality()));
-        toxicity = 100 * (1 - super.getAirQuality() / 65.0);
+    public double getAirToxicity() {
+        double maxScore = 65.0;
+        double toxicity = 100 * (1 - super.getAirQuality() / maxScore);
         toxicity = Math.max(0, Math.min(100, toxicity));
         return (double) Math.round(toxicity * 100.0) / 100.0;
+    }
+
+    public double damageProbability() {
+        this.calculateAirQuality();
+        return this.getAirToxicity();
+    }
+
+    public boolean isToxic() {
+        double maxScore = 65.0;
+        return this.getAirToxicity() > 0.8 * maxScore;
     }
 
     public String getSpecificNameCharacteristic() {
@@ -55,6 +65,6 @@ public class DesertAir extends Air {
 
     public void startDesertStorm(boolean desertStorm){
         this.desertStorm = desertStorm;
-        super.setTimeUntilWeatherChange(2);
+        super.setTimeUntilWeatherChange(2)  ;
     }
 }

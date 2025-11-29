@@ -4,7 +4,7 @@ import entities.Air;
 import entities.enums.AirType;
 
 public class TropicalAir extends Air {
-    private double co2Level;
+    private final double co2Level;
     private double rainfall;
     private boolean rainfallEvent;
 
@@ -17,25 +17,35 @@ public class TropicalAir extends Air {
         double quality = super.getOxygenLevel() * 2;
         quality += super.getHumidity() / 2;
         quality -= this.co2Level / 100;
-        quality = (double) Math.round(quality * 100) / 100;
-
-        if (this.isRainfall() && super.getTimeUntilWeatherChange() <= 0) {
+        quality = Math.max(0, Math.min(quality, 100.0));
+        if (this.isRainfall() && super.getTimeUntilWeatherChange() > 0) {
             quality += this.rainfall * 0.3;
         }
+        quality = Math.max(0, Math.min(quality, 100.0));
+        quality = (double) Math.round(quality * 100) / 100;
 
         super.setAirQuality(quality);
     }
 
-    public double damageProbability() {
-        this.calculateAirQuality();
-        double toxicity = Math.max(0, Math.min(100, super.getAirQuality()));
-        toxicity = 100 * (1 - super.getAirQuality() / 82.0);
+    public double getAirToxicity() {
+        double maxScore = 82.0;
+        double toxicity = 100 * (1 - super.getAirQuality() / maxScore);
         toxicity = Math.max(0, Math.min(100, toxicity));
         return (double) Math.round(toxicity * 100.0) / 100.0;
     }
 
+    public boolean isToxic() {
+        double maxScore = 82.0;
+        return this.getAirToxicity() > 0.8 * maxScore;
+    }
+
+    public double damageProbability() {
+        this.calculateAirQuality();
+        return this.getAirToxicity();
+    }
+
     public double getSpecificCharacteristic() {
-        return co2Level;
+        return Math.round(co2Level * 100.0) / 100.0;
     }
 
     public String getSpecificNameCharacteristic() {
@@ -43,7 +53,7 @@ public class TropicalAir extends Air {
     }
 
     public double getCo2Level() {
-        return co2Level;
+        return Math.round(co2Level * 100.0) / 100.0;
     }
 
     public boolean isRainfall() {

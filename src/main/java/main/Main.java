@@ -47,10 +47,9 @@ public class Main {
          * output.add(objectNode);
          *
          */
-        SimulationInput simulationParameters = inputLoader.getSimulations().get(0);
         List<CommandInput> commands = inputLoader.getCommands();
 
-        Brain simulationBrain = new Brain(simulationParameters, commands, MAPPER, output);
+        Brain simulationBrain = new Brain(inputLoader.getSimulations(), commands, MAPPER, output);
         simulationBrain.parseCommands();
         File outputFile = new File(outputPath);
         outputFile.getParentFile().mkdirs();

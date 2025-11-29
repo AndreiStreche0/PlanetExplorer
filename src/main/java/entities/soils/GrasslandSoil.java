@@ -4,7 +4,7 @@ import entities.Soil;
 import entities.enums.SoilType;
 
 public class GrasslandSoil extends Soil{
-    private double rootDensity;
+    private final double rootDensity;
 
     public GrasslandSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                       double organicMatter, double rootDensity) {

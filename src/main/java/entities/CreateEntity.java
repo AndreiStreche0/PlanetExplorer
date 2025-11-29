@@ -61,15 +61,15 @@ public final class CreateEntity {
     public static Animal createAnimal(AnimalInput input) {
         switch(input.type) {
             case "Carnivores":
-                return new Carnivore(input.name, input.mass, AnimalHunger.WELL_FED);
+                return new Carnivore(input.name, input.mass, AnimalHunger.HUNGRY);
             case "Detritivores":
-                return new Detritivore(input.name, input.mass, AnimalHunger.WELL_FED);
+                return new Detritivore(input.name, input.mass, AnimalHunger.HUNGRY);
             case "Herbivores":
-                return new Herbivore(input.name, input.mass, AnimalHunger.WELL_FED);
+                return new Herbivore(input.name, input.mass, AnimalHunger.HUNGRY);
             case "Omnivores":
-                return new Omnivore(input.name, input.mass, AnimalHunger.WELL_FED);
+                return new Omnivore(input.name, input.mass, AnimalHunger.HUNGRY);
             case "Parasites":
-                return new Parasite(input.name, input.mass, AnimalHunger.WELL_FED);
+                return new Parasite(input.name, input.mass, AnimalHunger.HUNGRY);
             default:
                 System.out.println("Wrong animal type");
                 return null;

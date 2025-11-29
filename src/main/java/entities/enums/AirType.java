@@ -7,7 +7,7 @@ public enum AirType {
     DESERT("DesertAir"),
     MOUNTAIN("MountainAir");
 
-    private String displayType;
+    private final String displayType;
 
     AirType(String displayType) {
         this.displayType = displayType;

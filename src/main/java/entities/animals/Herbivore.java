@@ -12,4 +12,7 @@ public class Herbivore extends Animal {
     public double attackProbability() {
         return (100 - 85) / 10.0;
     }
+    public boolean eatsAnimals() {
+        return true;
+    }
 }

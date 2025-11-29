@@ -1,6 +1,7 @@
 package entities;
 
 import entities.enums.AnimalHunger;
+import entities.enums.PlantAge;
 import entities.enums.SoilType;
 import planet.Cell;
 
@@ -26,6 +27,10 @@ public abstract class Soil extends Entity implements Evolve{
 
     public String getDisplayType() {
         return soilType.getDisplayType();
+    }
+
+    public void setWaterRetention(double waterRetention) {
+        this.waterRetention = waterRetention;
     }
 
     public void setSoilQuality(double soilQuality) {
@@ -71,14 +76,23 @@ public abstract class Soil extends Entity implements Evolve{
     public abstract double blockingProbability();
 
     public void evolve(Cell currentCell, int timeStamp) {
-        if (currentCell.getCellWater() != null && currentCell.getCellWater().isScanned() && timeStamp % 2 == 0) {
+        if (currentCell.getCellWater() != null && currentCell.getCellWater().isScanned()
+                && (timeStamp - currentCell.getCellWater().getScanTimeStamp()) % 2 == 0) {
             this.waterRetention += 0.1;
+            this.waterRetention = (double) Math.round(this.waterRetention * 100.0) / 100.0;
         }
-
-        if (currentCell.getCellAnimal() != null && currentCell.getCellAnimal().isScanned()) {
-            if (currentCell.getCellAnimal().getHunger() == AnimalHunger.WELL_FED)
-            this.organicMatter += 0.8;
+        if (currentCell.getCellAnimal() != null) {
+            Animal currAnimal = currentCell.getCellAnimal();
+            if (currAnimal.isScanned() && currAnimal.getNutritionalAddition() > 0.0 && !currAnimal.isSick()) {
+                this.organicMatter += currAnimal.getNutritionalAddition();
+                currAnimal.setNutritionalAddition(0.0);
+                this.organicMatter = (double) Math.round(this.organicMatter * 100.0) / 100.0;
+            }
         }
         this.calculateSoilQuality();
+    }
+
+    public void setOrganicMatter(double organicMatter) {
+        this.organicMatter = organicMatter;
     }
 }

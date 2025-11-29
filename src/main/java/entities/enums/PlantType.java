@@ -7,7 +7,7 @@ public enum PlantType {
     MOSSES("Mosses"),
     ALGAE("Algae");
 
-    private String displayType;
+    private final String displayType;
 
     PlantType(String displayType) {
         this.displayType = displayType;

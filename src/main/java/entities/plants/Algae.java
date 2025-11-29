@@ -21,21 +21,12 @@ public class Algae extends Plant {
     }
 
     public double calculateOxygenProduction() {
-        double oxygen = 0;
-        switch (super.getPlantAge()) {
-            case YOUNG:
-                oxygen = 0.2;
-                break;
-            case MATURE:
-                oxygen = 0.7;
-                break;
-            case OLD:
-                oxygen = 0.4;
-                break;
-            default:
-                oxygen = 0.0;
-                break;
-        }
+        double oxygen = switch (super.getPlantAge()) {
+            case YOUNG -> 0.2;
+            case MATURE -> 0.7;
+            case OLD -> 0.4;
+            default -> 0.0;
+        };
         oxygen += 0.5;
         return oxygen;
     }

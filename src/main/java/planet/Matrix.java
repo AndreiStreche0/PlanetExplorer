@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import entities.*;
 import entities.airs.*;
+import entities.animals.Carnivore;
+import entities.enums.AnimalHunger;
 import fileio.*;
 import planet.Cell;
 import terrabot.TerraBot;
@@ -59,11 +61,118 @@ public class Matrix {
     }
 
     public void evolve(int timeStamp) {
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++) {
+        for (int j = 0; j < this.width; j++) {
+            for (int i = 0; i < this.height; i++) {
                 this.cells[i][j].evolve(timeStamp);
+                if (this.cells[i][j].getCellAnimal() != null
+                        && this.cells[i][j].getCellAnimal().isScanned()) {
+                    Animal animal = this.cells[i][j].getCellAnimal();
+                    int time = timeStamp - animal.getScanTimeStamp();
+                    System.out.println("Timestamp " + timeStamp + " " + animal.getName() + " at (" + i + "," + j +
+                            ") - scanned: " + cells[i][j].getCellAnimal().isScanned() +
+                            ", time since scan: " + animal.getScanTimeStamp() +
+                            ", hunger: " + cells[i][j].getCellAnimal().getHunger());
+                    if (time % 2 == 0 && animal.getHunger() == AnimalHunger.HUNGRY
+                            && animal.getScanTimeStamp() >= 2
+                            && animal.getLastTimeStampMovement() != timeStamp) {
+                        this.moveAnimal(i, j, timeStamp);
+                    }
+                }
             }
         }
+    }
+
+    private void moveAnimal(int i, int j, int timeStamp) {
+        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
+        int bestNrEntities = 0;
+        double bestWaterQuality = -1;
+        Animal currAnimal = cells[i][j].getCellAnimal();
+        boolean eatsAnimals = currAnimal.eatsAnimals(), cellHasPlant = false, bestHasPlant = false;
+        Cell bestCell = null;
+        for (int q = 0; q < 4; q++) {
+            int newRow = i + directions[q][0];
+            int newColumn = j + directions[q][1];
+            if (newRow < 0 || newRow >= this.height || newColumn < 0 || newColumn >= this.width) {
+                continue;
+            }
+            Cell newCell = cells[newRow][newColumn];
+            if (!eatsAnimals && newCell.getCellAnimal() != null) {
+                continue;
+            }
+            int nrEntities = 0;
+            double waterQuality = 0.0;
+            if (newCell.getCellWater() != null && newCell.getCellWater().isScanned()) {
+                nrEntities++;
+                waterQuality += newCell.getCellWater().getWaterQuality();
+            }
+            if (newCell.getCellPlant() != null && newCell.getCellPlant().isScanned()) {
+                nrEntities++;
+                cellHasPlant = true;
+            }
+            boolean newBest = false;
+            if (bestCell == null || nrEntities > bestNrEntities) {
+                newBest = true;
+            } else if (nrEntities == bestNrEntities && !bestHasPlant && cellHasPlant) {
+                newBest = true;
+            } else if (nrEntities == bestNrEntities && !bestHasPlant && !cellHasPlant && waterQuality > bestWaterQuality) {
+                newBest = true;
+            }
+            if (newBest) {
+                bestCell = newCell;
+                bestNrEntities = nrEntities;
+                bestWaterQuality = waterQuality;
+                if (cellHasPlant) {
+                    bestHasPlant = true;
+                }
+            }
+        }
+        if (bestCell == null) {
+            return;
+        }
+        if (currAnimal.eatsAnimals() && bestCell.getCellAnimal() != null) {
+            Animal prey = bestCell.getCellAnimal();
+            currAnimal.setMass(currAnimal.getMass() + prey.getMass());
+            currAnimal.setHunger(AnimalHunger.WELL_FED);
+            bestCell.setCellAnimal(null);
+            System.out.println("Ate animal from coords in first if: " + bestCell.getxCoordinate() + " " + bestCell.getyCoordinate());
+        } else {
+            if (bestNrEntities == 2 && bestCell.getCellWater().getScanTimeStamp()
+                    == bestCell.getCellPlant().getScanTimeStamp()) {
+                Water water = bestCell.getCellWater();
+                Plant plant = bestCell.getCellPlant();
+                double intakeRate = 0.08;
+                double waterToDrink = Math.min(currAnimal.getMass() * intakeRate, water.getMass());
+                water.setMass(water.getMass() - waterToDrink);
+                currAnimal.setMass(currAnimal.getMass() + plant.getMass() + waterToDrink);
+                currAnimal.setNutritionalAddition(0.8);
+                currAnimal.setHunger(AnimalHunger.WELL_FED);
+                bestCell.setCellPlant(null);
+                System.out.println("Ate plant from coords in first if: " + bestCell.getxCoordinate() + " " + bestCell.getyCoordinate());
+            } else if (bestNrEntities == 1 && bestCell.getCellPlant() != null && bestCell.getCellPlant().isScanned()
+                    || bestNrEntities == 2 && bestCell.getCellWater().getScanTimeStamp()
+                    < bestCell.getCellPlant().getScanTimeStamp()) {
+                Plant plant = bestCell.getCellPlant();
+                currAnimal.setMass(currAnimal.getMass() + plant.getMass());
+                currAnimal.setNutritionalAddition(0.5);
+                currAnimal.setHunger(AnimalHunger.WELL_FED);
+                bestCell.setCellPlant(null);
+                System.out.println("Ate plant from coords in second if: " + bestCell.getxCoordinate() + " " + bestCell.getyCoordinate());
+            } else if (bestNrEntities == 1 && bestCell.getCellWater() != null && bestCell.getCellWater().isScanned() || bestNrEntities == 2
+                    && bestCell.getCellWater().getScanTimeStamp()
+                    > bestCell.getCellPlant().getScanTimeStamp()) {
+                Water water = bestCell.getCellWater();
+                double intakeRate = 0.08;
+                double waterToDrink = Math.min(currAnimal.getMass() * intakeRate, water.getMass());
+                water.setMass(water.getMass() - waterToDrink);
+                currAnimal.setMass(currAnimal.getMass() + waterToDrink);
+                currAnimal.setNutritionalAddition(0.5);
+                currAnimal.setHunger(AnimalHunger.WELL_FED);
+            }
+        }
+        System.out.println(currAnimal.getName() + " moved from " + "row = " + i + "column = " + j + "to: newRow = " + bestCell.getyCoordinate() + "newColumn = " + bestCell.getxCoordinate() + "at :" + timeStamp);
+        bestCell.setCellAnimal(currAnimal);
+        bestCell.getCellAnimal().setLastTimeStampMovement(timeStamp);
+        cells[i][j].setCellAnimal(null);
     }
 
     public int getWidth() {

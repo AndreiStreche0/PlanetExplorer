@@ -4,7 +4,7 @@ import entities.Soil;
 import entities.enums.SoilType;
 
 public class ForestSoil extends Soil {
-    private double leafLitter;
+    private final double leafLitter;
 
     public ForestSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                       double organicMatter, double leafLitter) {

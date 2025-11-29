@@ -7,7 +7,7 @@ public enum SoilType {
     GRASSLAND("GrasslandSoil"),
     TUNDRA("TundraSoil");
 
-    private String displayType;
+    private final String displayType;
 
     SoilType(String displayType) {
         this.displayType = displayType;

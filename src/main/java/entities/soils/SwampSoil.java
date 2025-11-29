@@ -4,7 +4,7 @@ import entities.Soil;
 import entities.enums.SoilType;
 
 public class SwampSoil extends Soil{
-    private double waterLogging;
+    private final double waterLogging;
 
     public SwampSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                          double organicMatter, double waterLogging) {

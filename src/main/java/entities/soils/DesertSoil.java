@@ -4,7 +4,7 @@ import entities.Soil;
 import entities.enums.SoilType;
 
 public class DesertSoil extends Soil {
-    private double salinity;
+    private final double salinity;
 
     public DesertSoil(String name, double mass, double nitrogen, double waterRetention, double soilpH,
                       double organicMatter, double salinity) {
@@ -21,7 +21,7 @@ public class DesertSoil extends Soil {
     }
 
     public double blockingProbability() {
-        return (double) (100 - super.getWaterRetention() + salinity) / 100.0 * 100;
+        return (100 - super.getWaterRetention() + salinity) / 100.0 * 100;
     }
 
     public double getSpecificCharacteristic() {

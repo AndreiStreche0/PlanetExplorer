@@ -10,8 +10,9 @@ public class Water extends Entity{
     private double contaminantIndex;
     private double pH;
     private boolean isFrozen;
-    private boolean isScanned;
+    private boolean scanned;
     private double waterQuality;
+    private int scanTimeStamp;
 
     public Water(String name, double mass, String type, double purity, double salinity,
                  int turbidity, double contaminantIndex, double pH, boolean isFrozen) {
@@ -23,8 +24,17 @@ public class Water extends Entity{
         this.contaminantIndex = contaminantIndex;
         this.pH = pH;
         this.isFrozen = isFrozen;
-        this.isScanned = false;
+        this.scanned = false;
         this.waterQuality = 0;
+        this.scanTimeStamp = -1;
+    }
+
+    public int getScanTimeStamp() {
+        return scanTimeStamp;
+    }
+
+    public void setScanTimeStamp(int scanTimeStamp) {
+        this.scanTimeStamp = scanTimeStamp;
     }
 
     public String getType() {
@@ -56,7 +66,12 @@ public class Water extends Entity{
     }
 
     public boolean isScanned() {
-        return this.isScanned;
+        return this.scanned;
+    }
+
+    @Override
+    public void setScanned(boolean scanned) {
+        this.scanned = scanned;
     }
 
     public void calculateQuality () {
@@ -92,7 +107,6 @@ public class Water extends Entity{
         return "good";
     }
 
-    public void evolve(Cell currentCell, int timestamp) {
-
+    public void evolve(Cell currentCell, int timeStamp) {
     }
 }

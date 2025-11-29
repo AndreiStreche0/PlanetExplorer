@@ -12,4 +12,7 @@ public class Parasite extends Animal {
     public double attackProbability() {
         return (100 - 10) / 10.0;
     }
+    public boolean eatsAnimals() {
+        return true;
+    }
 }

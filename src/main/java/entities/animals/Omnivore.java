@@ -12,4 +12,7 @@ public class Omnivore extends Animal {
     public double attackProbability() {
         return (100 - 60) / 10.0;
     }
+    public boolean eatsAnimals() {
+        return false;
+    }
 }

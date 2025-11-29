@@ -71,6 +71,9 @@ public class Cell {
     }
 
     public void evolve(int timeStamp) {
+        if (this.cellPlant != null && this.cellPlant.isScanned()) {
+            this.cellPlant.evolve(this, timeStamp);
+        }
         if (this.cellAir != null) {
             this.cellAir.evolve(this, timeStamp);
         }
@@ -83,9 +86,22 @@ public class Cell {
         if (this.cellAnimal != null && this.cellAnimal.isScanned()) {
             this.cellAnimal.evolve(this, timeStamp);
         }
-        if (this.cellPlant != null && this.cellPlant.isScanned()) {
-            this.cellPlant.evolve(this, timeStamp);
-        }
+
+    }
+
+    public void scanPlant(int timeStamp) {
+        this.cellPlant.setScanned(true);
+        this.cellPlant.setScanTimeStamp(timeStamp);
+    }
+
+    public void scanWater(int timeStamp) {
+        this.cellWater.setScanned(true);
+        this.cellWater.setScanTimeStamp(timeStamp);
+    }
+
+    public void scanAnimal(int timeStamp) {
+        this.cellAnimal.setScanned(true);
+        this.cellAnimal.setScanTimeStamp(timeStamp);
     }
 
     public int getScore() {
