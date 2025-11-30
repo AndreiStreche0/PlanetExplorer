@@ -14,15 +14,17 @@ import java.util.List;
 /**
  * The entry point to this homework. It runs the checker that tests your implementation.
  */
-public class Main {
+final public class Main {
 
-    private Main(){
+    private Main() {
     }
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     public static final ObjectWriter WRITER = MAPPER.writer().withDefaultPrettyPrinter();
 
-
+    /**
+      *starts
+     */
     public static void action(final String inputPath,
                               final String outputPath) throws IOException {
 
